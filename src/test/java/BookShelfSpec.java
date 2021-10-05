@@ -2,9 +2,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.time.Year;
 import java.util.*;
 
@@ -14,28 +13,26 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("A BookShelf")
+@ExtendWith(BooksParameterResolver.class)
 public class BookShelfSpec {
     private BookShelf shelf;
     private Book effectiveJava;
     private Book codeComplete;
     private Book mythicalManMonth;
     private Book cleanCode;
+
     @BeforeEach
-    public void init() {
+    public void init(Map<String, Book> books) {
         shelf = new BookShelf();
-        effectiveJava = new Book("Effective Java", "Joshua Bloch",
-                LocalDate.of(2008, Month.MAY, 8));
-        codeComplete = new Book("Code Complete", "Steve McConnel",
-                LocalDate.of(2004, Month.JUNE, 9));
-        mythicalManMonth = new Book("The Mythical Man-Month", "Frederick Phillips Brooks",
-                LocalDate.of(1975, Month.JANUARY, 1));
-        cleanCode = new Book("Clean Code", "Robert C. Martin",
-                LocalDate. of(2008, Month.AUGUST, 1));
+        this.effectiveJava = books.get("Effective Java");
+        this.codeComplete = books.get("Code Complete");
+        this.mythicalManMonth = books.get("The Mythical Man-Month");
+        this.cleanCode = books.get("Clean Code");
     }
 
     @Nested
     @DisplayName("is empty")
-    class Empty{
+    class Empty {
 
         @Test
         @DisplayName("when no book added to it")
@@ -55,7 +52,7 @@ public class BookShelfSpec {
 
     @Nested
     @DisplayName("after adding books")
-    class BooksAreAdded{
+    class BooksAreAdded {
         @Test
         @DisplayName("contains two books")
         public void bookshelfContainsTwoBooksWhenTwoBooksAdded() {
@@ -76,7 +73,7 @@ public class BookShelfSpec {
 
     @Nested
     @DisplayName("is arranged")
-    class Arranged{
+    class Arranged {
         @Test
         @DisplayName("lexicographically by book title ")
         public void bookshelfArrangedByTitle() {
