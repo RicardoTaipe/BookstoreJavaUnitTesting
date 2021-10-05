@@ -84,24 +84,6 @@ public class BookShelfSpec {
         }
 
         @Test
-        @DisplayName("by book publication date in ascending order")
-        public void groupBooksInsideBookShelfByPublicationYear() {
-            shelf.add(effectiveJava, codeComplete, mythicalManMonth, cleanCode);
-            Map<Year, List<Book>> booksByPublicationYear = shelf.groupByPublicationYear();
-            assertThat(booksByPublicationYear)
-                    .containsKey(Year.of(2008))
-                    .containsValues(Arrays.asList(effectiveJava, cleanCode));
-
-            assertThat(booksByPublicationYear)
-                    .containsKey(Year.of(2004))
-                    .containsValues(singletonList(codeComplete));
-
-            assertThat(booksByPublicationYear)
-                    .containsKey(Year.of(1975))
-                    .containsValues(singletonList(mythicalManMonth));
-        }
-
-        @Test
         @DisplayName("by user provided criteria (by book title lexicographically descending order )")
         public void bookshelfArrangedByUserProvidedCriteria() {
             shelf.add(effectiveJava, codeComplete, mythicalManMonth);
@@ -111,7 +93,21 @@ public class BookShelfSpec {
         }
 
         @Test
-        @DisplayName("by provided criteria(group by author name)")
+        @DisplayName("by user provided criteria")
+        public void booksInBookShelfAreInInsertionOrderAfterCallingArrange() {
+            shelf.add(effectiveJava, codeComplete, mythicalManMonth);
+            shelf.arrange();
+            List<Book> books = shelf.books();
+            assertEquals(Arrays.asList(effectiveJava, codeComplete, mythicalManMonth),
+                    books, "Books in bookshelf are in insertion order");
+        }
+    }
+
+    @Nested
+    @DisplayName("books are grouped by")
+    class Group {
+        @Test
+        @DisplayName("user provided criteria(group by author name)")
         void groupBooksByUserProvidedCriteria() {
             shelf.add(effectiveJava, codeComplete, mythicalManMonth, cleanCode);
             Map<String, List<Book>> booksByAuthor = shelf.groupBy(Book::getAuthor);
@@ -128,13 +124,22 @@ public class BookShelfSpec {
         }
 
         @Test
-        @DisplayName("by user provided criteria")
-        public void booksInBookShelfAreInInsertionOrderAfterCallingArrange() {
-            shelf.add(effectiveJava, codeComplete, mythicalManMonth);
-            shelf.arrange();
-            List<Book> books = shelf.books();
-            assertEquals(Arrays.asList(effectiveJava, codeComplete, mythicalManMonth),
-                    books, "Books in bookshelf are in insertion order");
+        @DisplayName("publication year")
+        public void groupBooksInsideBookShelfByPublicationYear() {
+            shelf.add(effectiveJava, codeComplete, mythicalManMonth, cleanCode);
+            Map<Year, List<Book>> booksByPublicationYear = shelf.groupByPublicationYear();
+            assertThat(booksByPublicationYear)
+                    .containsKey(Year.of(2008))
+                    .containsValues(Arrays.asList(effectiveJava, cleanCode));
+
+            assertThat(booksByPublicationYear)
+                    .containsKey(Year.of(2004))
+                    .containsValues(singletonList(codeComplete));
+
+            assertThat(booksByPublicationYear)
+                    .containsKey(Year.of(1975))
+                    .containsValues(singletonList(mythicalManMonth));
         }
+
     }
 }
