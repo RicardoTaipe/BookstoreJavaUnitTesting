@@ -9,6 +9,7 @@ import java.util.*;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("A BookShelf")
@@ -54,15 +55,11 @@ public class BookShelfSpec {
 
     @Test
     @DisplayName("bookshelf returns an immutable books collection to client")
-    void booksReturnedFromBookShelfIsImmutableForClient(){
-        shelf.add(effectiveJava,codeComplete);
+    void booksReturnedFromBookShelfIsImmutableForClient() {
+        shelf.add(effectiveJava, codeComplete);
         List<Book> books = shelf.books();
-        try {
-            books.add(mythicalManMonth);
-            fail(() -> "Should not be able to add book to books");
-        }catch (Exception e){
-            assertTrue(e instanceof UnsupportedOperationException);
-        }
+        assertThatThrownBy(() -> books.add(mythicalManMonth))
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
