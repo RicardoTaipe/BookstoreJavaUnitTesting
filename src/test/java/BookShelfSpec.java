@@ -4,13 +4,18 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.time.LocalDate;
 import java.time.Year;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("A BookShelf")
 @ExtendWith(BooksParameterResolver.class)
@@ -141,5 +146,28 @@ public class BookShelfSpec {
                     .containsValues(singletonList(mythicalManMonth));
         }
 
+    }
+
+    @Nested
+    @DisplayName("search")
+    class BookShelfSearchSpec {
+        @BeforeEach
+        void setup() {
+            shelf.add(codeComplete, effectiveJava, mythicalManMonth, cleanCode);
+        }
+
+        @Test
+        @DisplayName("should find books with title containing text")
+        void shouldFindBooksWithTitleContainingText() {
+            List<Book> books = shelf.findBooksByTitle("code");
+            assertThat(books.size()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("should find books with title containing text and published after specified date")
+        void shouldFilterSearchedBookOnPublishedDate() {
+            List<Book> books = shelf.findBooksByTitle("code", b -> b.getPublishedOn().isBefore(LocalDate.of(2014, 12, 31)));
+            assertThat(books.size()).isEqualTo(2);
+        }
     }
 }

@@ -1,9 +1,9 @@
 import java.time.Year;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 public class BookShelf {
     private final List<Book> books = new ArrayList<>();
@@ -21,7 +21,7 @@ public class BookShelf {
     }
 
     public List<Book> arrange(Comparator<Book> criteria) {
-        return books.stream().sorted(criteria).collect(Collectors.toList());
+        return books.stream().sorted(criteria).collect(toList());
     }
 
     public Map<Year, List<Book>> groupByPublicationYear() {
@@ -40,5 +40,16 @@ public class BookShelf {
         int percentageCompleted = booksRead * 100 / books.size();
         int percentageToRead = booksToRead * 100 / books.size();
         return new Progress(percentageCompleted, percentageToRead, 0);
+    }
+
+    public List<Book> findBooksByTitle(String title) {
+        return findBooksByTitle(title, book -> true);
+    }
+
+    public List<Book> findBooksByTitle(String title, BookFilter filter) {
+        return books.stream()
+                .filter(book -> book.getTitle().toLowerCase().contains(title))
+                .filter(filter::apply)
+                .collect(toList());
     }
 }
