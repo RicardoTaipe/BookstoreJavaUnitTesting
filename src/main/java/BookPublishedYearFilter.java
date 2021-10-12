@@ -11,6 +11,6 @@ public class BookPublishedYearFilter implements BookFilter {
 
     @Override
     public boolean apply(Book book) {
-        return book.getPublishedOn().isAfter(startDate);
+        return book != null && book.getPublishedOn().isAfter(startDate);
     }
 }

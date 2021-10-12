@@ -24,11 +24,21 @@ public class BookFilterSpec {
 
     @Nested
     @DisplayName("book published date")
-    class BookPublishedFilterSpec {
+    class BookPublishedFilterSpec implements  FilterBoundaryTests {
+        BookFilter filter;
+
+        @BeforeEach
+        void init(){
+            filter = BookPublishedYearFilter.After(2007);
+        }
+
+        @Override
+        public BookFilter get() {
+            return filter;
+        }
         @Test
         @DisplayName("is after specified year")
         void validateBookPublishedDatePostAskedYear() {
-            BookFilter filter = BookPublishedYearFilter.After(2007);
             assertTrue(filter.apply(cleanCode));
             assertFalse(filter.apply(codeComplete));
         }
@@ -76,5 +86,6 @@ public class BookFilterSpec {
             verify(firstInvokedMockedFilter).apply(cleanCode);
             verify(secondInvokedMockedFilter).apply(cleanCode);
         }
+
     }
 }
