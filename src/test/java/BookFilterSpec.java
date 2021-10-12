@@ -8,6 +8,7 @@ import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class BookFilterSpec {
     private Book cleanCode;
@@ -35,26 +36,45 @@ public class BookFilterSpec {
         @Test
         @DisplayName("Composite criteria is based on multiple filters")
         void shouldFilterOnMultiplesCriteria() {
+            BookFilter mockedFilter = mock(BookFilter.class);
+            when(mockedFilter.apply(cleanCode)).thenReturn(true);
             CompositeFilter compositeFilter = new CompositeFilter();
-            compositeFilter.addFilter(b -> false);
-            assertFalse(compositeFilter.apply(cleanCode));
+            compositeFilter.addFilter(mockedFilter);
+            compositeFilter.apply(cleanCode);
+            verify(mockedFilter).apply(cleanCode);
         }
+
         @Test
-        @DisplayName("Composite criteria does not invoke after first failure")
-        void shouldNotInvokeAfterFirstFailure() {
+        @DisplayName("Composite criteria  invokes all incase of failure")
+        void shouldInvokeAllInFailure() {
             CompositeFilter compositeFilter = new CompositeFilter();
-            compositeFilter.addFilter(b -> false);
-            compositeFilter.addFilter(b -> true);
+
+            BookFilter invokedMockedFilter = mock(BookFilter.class);
+            when(invokedMockedFilter.apply(cleanCode)).thenReturn(false);
+            compositeFilter.addFilter(invokedMockedFilter);
+
+            BookFilter secondInvokedMockedFilter = mock(BookFilter.class);
+            when(secondInvokedMockedFilter.apply(cleanCode)).thenReturn(true);
+            compositeFilter.addFilter(secondInvokedMockedFilter);
+
             assertFalse(compositeFilter.apply(cleanCode));
+            verify(invokedMockedFilter).apply(cleanCode);
+            verify(secondInvokedMockedFilter).apply(cleanCode);
         }
 
         @Test
         @DisplayName("Composite criteria invokes all filters")
         void shouldInvokeAllFilters() {
             CompositeFilter compositeFilter = new CompositeFilter();
-            compositeFilter.addFilter(b -> true);
-            compositeFilter.addFilter(b -> true);
+            BookFilter firstInvokedMockedFilter = mock(BookFilter.class);
+            when(firstInvokedMockedFilter.apply(cleanCode)).thenReturn(true);
+            compositeFilter.addFilter(firstInvokedMockedFilter);
+            BookFilter secondInvokedMockedFilter = mock(BookFilter.class);
+            when(secondInvokedMockedFilter.apply(cleanCode)).thenReturn(true);
+            compositeFilter.addFilter(secondInvokedMockedFilter);
             assertTrue(compositeFilter.apply(cleanCode));
+            verify(firstInvokedMockedFilter).apply(cleanCode);
+            verify(secondInvokedMockedFilter).apply(cleanCode);
         }
     }
 }

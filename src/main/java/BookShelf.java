@@ -52,5 +52,4 @@ public class BookShelf {
                 .filter(filter::apply)
                 .collect(toList());
     }
-    //TODO Implement BookFilterSpec pag 80
 }
